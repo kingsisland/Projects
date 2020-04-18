@@ -30,7 +30,7 @@ class NumberExtractor:
         for y in range(9):
             for x in range(9):
                 cropped_cell = self.thresholded[y * cell_size:(y + 1) * cell_size - 1,
-                        x * cell_size: (x + 1) * cell_size - 1]
+                               x * cell_size: (x + 1) * cell_size - 1]
                 cell_path = "Output_Images/cells/" + str(y) + str(x) + ".png"
                 try:
                     os.remove(cell_path)
@@ -77,6 +77,7 @@ class NumberExtractor:
                     # print("Not found for %d,%d" %(j, i))
                     self.sudoku_numbers[j, i] = -1
 
+    def center_scale_numbers(self):
         # Cell centering and scaling to get uniform scaled and center digited cells
         for i in range(9):
             for j in range(9):
@@ -176,11 +177,89 @@ class NumberExtractor:
                 cleaned_cell_path = "Output_Images/centered_cells/" + str(i) + str(j) + ".png"
                 try:
                     os.remove(cleaned_cell_path)
-                except:
+                finally:
                     pass
                 cv2.imwrite(cleaned_cell_path, current_cell)
+
+    def find_number_boundaries_and_scale_(self):
+        # Tightens on the number present in cleaned cell and scales all the found numbers to a uniform value
+        for i in range(9):
+            for j in range(9):
+                if self.sudoku_numbers[i, j] == -1:
+                    continue
+
+                height, width = current_cell.shape
+                current_cell_path = "Output_Images/cleaned_cells/" + str(i) + str(j) + ".png"
+                current_cell = cv2.imread(current_cell_path, 0)
+
+                top_boundary = -1             # Corresponds to y values
+                bottom_boundary = height      # Corresponds to y values
+                left_boundary = -1            # Corresponds to x values
+                right_boundary = width        # Corresponds to x values
+
+                # Finds the top most pixel
+                for y in range(height):
+                    if top_flag:
+                        break
+                    for x in range(width):
+                        if current_cell[y, x] == 255:
+                            top_boundary = y
+                            top_flag = True
+                            break
+                # Finds the bottom post pixel that is lit up
+                for y in range(height - 1, -1, -1):
+                    if bottom_flag:
+                        break
+                    for x in range(width):
+                        if current_cell[y, x] == 255:
+                            bottom_boundary = y
+                            bottom_flag = True
+                            break
+                # Finds the left most pixel
+                for x in range(width):
+                    if left_flag:
+                        break
+                    for y in range(height):
+                        if current_cell[y, x] == 255:
+                            left_boundary = x
+                            left_flag = True
+                            break
+                # Finds the right most boundary
+                for x in range(width - 1, -1, -1):
+                    if right_flag:
+                        break
+                    for y in range(height):
+                        if current_cell[y, x] == 255:
+                            right_boundary = x
+                            right_flag = True
+                            break
+
+                # Making sure to create dirs if not already created
+                if not os.path.exists("Output_Images/cropped_cells"):
+                    os.mkdir("Output_Images/cropped_cells")
+                if not os.path.exists("Output_Images/cropped_scaled_images"):
+                    os.mkdir("Output_Images/cropped_scaled_images")
+
+                # Lets crop the images to their boundaries
+                cropped_cell = current_cell[top_boundary:bottom_boundary + 1, left_boundary: right_boundary + 1]
+                # Lets scale the cropped pictures
+                cropped_scaled_cell = cv2.resize(cropped_cell, (40, 40), cv2.INTER_AREA)
+
+                cropped_cell_path = "Output_Images/cropped_cells/" + str(i) + str(j) + ".png"
+                cropped_scaled_cell_path = "Output_Images/cropped_scaled_cells/" + str(i) + str(j) + ".png"
+                try:
+                    os.remove(cropped_cell_path)
+                    os.remove(cropped_scaled_cell_path)
+                finally:
+                    pass
+                cv2.imwrite(cropped_cell_path,cropped_cell)
+                cv2.imwrite(cropped_scaled_cell_path, cropped_scaled_cell)
+
+
+
 
 
 number_extractor = NumberExtractor()
 number_extractor.preprocess()
 number_extractor.find_numbers()
+#number_extractor.center_scale_numbers()
