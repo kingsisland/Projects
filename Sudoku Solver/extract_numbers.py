@@ -1,7 +1,7 @@
+import os
+
 import cv2
 import numpy as np
-import os
-import matplotlib.pyplot as plt
 
 
 class NumberExtractor:
@@ -177,25 +177,28 @@ class NumberExtractor:
                 cleaned_cell_path = "Output_Images/centered_cells/" + str(i) + str(j) + ".png"
                 try:
                     os.remove(cleaned_cell_path)
-                finally:
+                except:
                     pass
                 cv2.imwrite(cleaned_cell_path, current_cell)
 
-    def find_number_boundaries_and_scale_(self):
+    def crop_scale_numbers(self):
         # Tightens on the number present in cleaned cell and scales all the found numbers to a uniform value
         for i in range(9):
             for j in range(9):
                 if self.sudoku_numbers[i, j] == -1:
                     continue
 
-                height, width = current_cell.shape
                 current_cell_path = "Output_Images/cleaned_cells/" + str(i) + str(j) + ".png"
                 current_cell = cv2.imread(current_cell_path, 0)
-
-                top_boundary = -1             # Corresponds to y values
-                bottom_boundary = height      # Corresponds to y values
-                left_boundary = -1            # Corresponds to x values
-                right_boundary = width        # Corresponds to x values
+                height, width = current_cell.shape
+                top_boundary = -1  # Corresponds to y values
+                bottom_boundary = height  # Corresponds to y values
+                left_boundary = -1  # Corresponds to x values
+                right_boundary = width  # Corresponds to x values
+                top_flag = False
+                bottom_flag = False
+                left_flag = False
+                right_flag = False
 
                 # Finds the top most pixel
                 for y in range(height):
@@ -237,8 +240,8 @@ class NumberExtractor:
                 # Making sure to create dirs if not already created
                 if not os.path.exists("Output_Images/cropped_cells"):
                     os.mkdir("Output_Images/cropped_cells")
-                if not os.path.exists("Output_Images/cropped_scaled_images"):
-                    os.mkdir("Output_Images/cropped_scaled_images")
+                if not os.path.exists("Output_Images/cropped_scaled_cells"):
+                    os.mkdir("Output_Images/cropped_scaled_cells")
 
                 # Lets crop the images to their boundaries
                 cropped_cell = current_cell[top_boundary:bottom_boundary + 1, left_boundary: right_boundary + 1]
@@ -247,19 +250,18 @@ class NumberExtractor:
 
                 cropped_cell_path = "Output_Images/cropped_cells/" + str(i) + str(j) + ".png"
                 cropped_scaled_cell_path = "Output_Images/cropped_scaled_cells/" + str(i) + str(j) + ".png"
+
                 try:
                     os.remove(cropped_cell_path)
                     os.remove(cropped_scaled_cell_path)
-                finally:
+                except:
                     pass
-                cv2.imwrite(cropped_cell_path,cropped_cell)
+                cv2.imwrite(cropped_cell_path, cropped_cell)
                 cv2.imwrite(cropped_scaled_cell_path, cropped_scaled_cell)
-
-
-
 
 
 number_extractor = NumberExtractor()
 number_extractor.preprocess()
 number_extractor.find_numbers()
 #number_extractor.center_scale_numbers()
+number_extractor.crop_scale_numbers()
