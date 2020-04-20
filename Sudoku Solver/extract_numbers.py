@@ -160,7 +160,6 @@ class NumberExtractor:
                     except:
                         pass
                     # write cleaned cell to memory
-
                     cv2.imwrite(cleaned_cell_path, current_cell)
                 else:
                     # print("Not found for %d,%d" %(j, i))
@@ -348,10 +347,13 @@ class NumberExtractor:
                 cv2.imwrite(cropped_cell_path, cropped_cell)
                 cv2.imwrite(cropped_scaled_cell_path, cropped_scaled_cell)
 
+    def get_sudoku_table(self):
+        return self.sudoku_numbers
 
-# number_extractor = NumberExtractor()
-# number_extractor.preprocess()
-# number_extractor.find_numbers()
+
+number_extractor = NumberExtractor()
+number_extractor.preprocess()
+number_extractor.find_numbers()
 # number_extractor.center_scale_numbers()
-# number_extractor.crop_scale_numbers()
-crop_scale_training_images()
+number_extractor.crop_scale_numbers()
+# crop_scale_training_images()
