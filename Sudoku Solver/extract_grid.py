@@ -1,71 +1,13 @@
 import os
 
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
-import extract_numbers
-
-# Check if output folder is already created
-if not os.path.exists("Output_Images"):
-    os.mkdir("Output_Images")
-
-image = cv2.imread("sudokuFull.jpg", 0)
-
-# image_colored = cv2.imread("sudokuFull.jpg", cv2.IMREAD_COLOR)
-# dim = (int(image.shape[1] / 3), int(image.shape[0] / 3))
-# image = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)
-# image_colored = cv2.resize(image_colored, dim, interpolation=cv2.INTER_AREA)
-# plt.title("Image")
-# plt.imshow(image, cmap='gray' )
-blurred = cv2.GaussianBlur(image, (5, 5), 0)
-# plt.imshow(blurred, cmap='gray' )
-thresholded = cv2.adaptiveThreshold(blurred, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 5, 5)
-thresholded = cv2.bitwise_not(thresholded)
-outer_box = thresholded
-# cv2.imshow("im thresholded", thresholded)
-
-kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-dilated_image = cv2.dilate(thresholded, kernel, iterations=1)
-# plt.imshow(dilated_image, cmap='gray')
-outer_box = dilated_image
-
-# Flood Fill to find the biggest blob
-# outer_box = thresholded
-height, width = np.shape(outer_box)
-max1 = -1
-maxPt = None
-for y in range(height):
-    row = outer_box[y]
-    for x in range(width):
-        if row[x] >= 200:
-            area = cv2.floodFill(outer_box, None, (x, y), 64)[0]
-            if area > max1:
-                max1 = area
-                maxPt = (x, y)
-
-cv2.floodFill(outer_box, None, maxPt, (255, 255, 255))
-# print(maxPt)
-# plt.imshow(outer_box, cmap = "gray")
-# cv2.imshow("flood", outer_box)
-
-
-for y in range(height):
-    row = outer_box[y]
-    for x in range(width):
-        if row[x] < 200 and x != maxPt[0] and y != maxPt[1]:
-            cv2.floodFill(outer_box, None, (x, y), (0, 0, 0))
-
-
-# plt.imshow(outer_box, cmap = "gray",vmin=0, vmax=255)
-# outer_box = cv2.erode(outer_box,kernel)
-# cv2.imshow("flood", outer_box)
 
 
 # DRAWS LINES
 def draw_lines(image, hough_lines, color=None, thickness=2):
     if color is None:
         color = [255, 255, 255]
-
     height, width = image.shape
     for line in hough_lines:
         rho, theta = line[0]
@@ -82,25 +24,6 @@ def draw_lines(image, hough_lines, color=None, thickness=2):
             (x2, y2) = (rho, height)
 
         cv2.line(image, (x1, y1), (x2, y2), color, thickness)
-
-
-rho_resolution = 1
-theta_resolution = np.pi / 180
-threshold = 155
-
-hough_lines = cv2.HoughLines(outer_box, rho_resolution, theta_resolution, threshold)
-
-
-# hough_lines_image = np.zeros_like(outer_box)
-# draw_lines(hough_lines_image, hough_lines)
-
-
-# cv2.imshow("line cv2", hough_lines_image)
-# original_image_with_hough_lines = weighted_img(hough_lines_image,image_colored)
-
-
-# plt.imshow(hough_lines_image)
-# plt.show()
 
 
 # Merging lines
@@ -144,16 +67,6 @@ def merge_related_lines(lines, image):
                     pos[0, 1] = -100
 
 
-merge_related_lines(hough_lines, image)
-
-
-# hough_lines_image = np.zeros_like(image)
-# draw_lines(hough_lines_image, hough_lines)
-# hough_lines_image_bitwise_not = cv2.bitwise_not(hough_lines_image)
-# plt.imshow(hough_lines_image_bitwise_not, cmap="gray")
-# plt.show()
-
-
 # Figures out the borders of the outer_box
 def find_borders(lines, image):
     height, width = image.shape
@@ -174,7 +87,7 @@ def find_borders(lines, image):
             # Horizontal line
             x1, y1 = 0, line[0, 0] / np.sin(line[0, 1])
             if y1 >= height:
-                y1 = height-1
+                y1 = height - 1
             elif y1 < 0:
                 y1 = 0
 
@@ -215,25 +128,6 @@ def find_borders(lines, image):
     return [top_edge, bottom_edge, left_egde, right_egde]
 
 
-edges = find_borders(hough_lines, image)
-
-
-edges_image = np.zeros_like(outer_box)
-
-draw_lines(edges_image, edges)
-edges_image = cv2.bitwise_not(edges_image)
-plt.imshow(edges_image, cmap="gray")
-plt.show()
-
-
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
-#
-# plt.imshow(image_colored)
-# plt.show()
-
-
-# cv2.imshow("flood", outer_box)
 def find_intersection_point(line_a, line_b):
     rho_1, theta_1 = line_a[0]
     rho_2, theta_2 = line_b[0]
@@ -241,12 +135,6 @@ def find_intersection_point(line_a, line_b):
     x = (rho_2 * np.sin(theta_1) - rho_1 * np.sin(theta_2)) / np.sin(theta_1 - theta_2)
     y = (rho_1 - x * np.cos(theta_1)) / np.sin(theta_1)
     return int(x), int(y)
-
-
-top_left_corner = find_intersection_point(edges[0], edges[2])
-top_right_corner = find_intersection_point(edges[0], edges[3])
-bottom_left_corner = find_intersection_point(edges[1], edges[2])
-bottom_right_corner = find_intersection_point(edges[1], edges[3])
 
 
 # Find the longest edge
@@ -265,16 +153,106 @@ def length_of_longest_edge(top_left_corner, top_right_corner, bottom_left_corner
     return int(maxLen ** 0.5)
 
 
-# Getting to the part of warping the image to correct the orientation and center it
-maxLen = length_of_longest_edge(top_left_corner, top_right_corner, bottom_left_corner, bottom_right_corner)
-src = np.array([top_left_corner, top_right_corner, bottom_right_corner, bottom_left_corner]).astype(np.float32)
-dst = np.array([[0, 0], [maxLen - 1, 0], [maxLen - 1, maxLen - 1], [0, maxLen - 1]]).astype(np.float32)
-M = cv2.getPerspectiveTransform(src, dst)
-warped = cv2.warpPerspective(image, M, (maxLen, maxLen))
+class SudokuImage:
+    def __init__(self, image_path="sudokuFull.jpg"):
+        # Check if output folder is already created
+        if not os.path.exists("Output_Images"):
+            os.mkdir("Output_Images")
+        if not os.path.exists("Output_Images/preprocessing_phase"):
+            os.mkdir("Output_Images/preprocessing_phase")
 
-try:
-    os.remove("Output_Images/extracted_grid_1.png")
-except:
-    pass
-cv2.imwrite("Output_Images/extracted_grid_1.png", warped)
+        self.image = cv2.imread(image_path, 0)
+        self.outer_box = None
+        self.extracted_grid = None
+        self.hough_lines = None
+        self.edges = None
+        self.top_left_corner = None
+        self.top_right_corner = None
+        self.bottom_left_corner = None
+        self.bottom_right_corner = None
+        cv2.imwrite("Output_Images/preprocessing_phase/original.png", self.image)
 
+    def preprocess_image(self):
+        blurred = cv2.GaussianBlur(self.image, (5, 5), 0)
+        thresholded = cv2.adaptiveThreshold(blurred, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 5, 5)
+        thresholded = cv2.bitwise_not(thresholded)
+        cv2.imwrite("Output_Images/preprocessing_phase/thresholded.png", thresholded)
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+        dilated_image = cv2.dilate(thresholded, kernel, iterations=1)
+        self.outer_box = dilated_image
+        cv2.imwrite("Output_Images/preprocessing_phase/dilated_image.png", dilated_image)
+        # Flood Fill to find the biggest blob
+
+        height, width = np.shape(self.outer_box)
+        max1 = -1
+        max_pt = None
+        for y in range(height):
+            row = self.outer_box[y]
+            for x in range(width):
+                if row[x] >= 200:
+                    area = cv2.floodFill(self.outer_box, None, (x, y), 64)[0]
+                    if area > max1:
+                        max1 = area
+                        max_pt = (x, y)
+
+        cv2.floodFill(self.outer_box, None, max_pt, (255, 255, 255))
+
+        for y in range(height):
+            row = self.outer_box[y]
+            for x in range(width):
+                if row[x] < 200 and x != max_pt[0] and y != max_pt[1]:
+                    cv2.floodFill(self.outer_box, None, (x, y), (0, 0, 0))
+
+        cv2.imwrite("Output_Images/preprocessing_phase/floodfill.png", self.outer_box)
+
+        # outer_box = cv2.erode(outer_box,kernel)
+
+    def detect_borders(self):
+
+        # Parameters that define the desired accuracy that is 1 degree theta and 1 unit rho
+        rho_resolution = 1
+        theta_resolution = np.pi / 180
+        threshold = 155
+        self.hough_lines = cv2.HoughLines(self.outer_box, rho_resolution, theta_resolution, threshold)
+
+        hough_lines_image = np.zeros_like(self.outer_box)
+        draw_lines(hough_lines_image, self.hough_lines)
+        cv2.imwrite("Output_Images/preprocessing_phase/hough_lines.png", hough_lines_image)
+
+        merge_related_lines(self.hough_lines, self.image)
+
+        hough_lines_image = np.zeros_like(self.image)
+        draw_lines(hough_lines_image, self.hough_lines)
+        hough_lines_image_bitwise_not = cv2.bitwise_not(hough_lines_image)
+        cv2.imwrite("Output_Images/preprocessing_phase/merged_hough_lines.png", hough_lines_image_bitwise_not)
+
+        # Find the borders of the Sudoku board
+        self.edges = find_borders(self.hough_lines, self.image)
+        edges_image = np.zeros_like(self.outer_box)
+        draw_lines(edges_image, self.edges)
+        edges_image = cv2.bitwise_not(edges_image)
+        cv2.imwrite("Output_Images/preprocessing_phase/recognized_edges.png", edges_image)
+        self.top_left_corner = find_intersection_point(self.edges[0], self.edges[2])
+        self.top_right_corner = find_intersection_point(self.edges[0], self.edges[3])
+        self.bottom_left_corner = find_intersection_point(self.edges[1], self.edges[2])
+        self.bottom_right_corner = find_intersection_point(self.edges[1], self.edges[3])
+
+    def correct_perspective(self):
+        # Getting to the part of warping the image to correct the orientation and center it
+        maxLen = length_of_longest_edge(self.top_left_corner, self.top_right_corner,
+                                        self.bottom_left_corner, self.bottom_right_corner)
+        src = np.array([self.top_left_corner, self.top_right_corner, self.bottom_right_corner,
+                        self.bottom_left_corner]).astype(np.float32)
+        dst = np.array([[0, 0], [maxLen - 1, 0], [maxLen - 1, maxLen - 1], [0, maxLen - 1]]).astype(np.float32)
+        M = cv2.getPerspectiveTransform(src, dst)
+        self.extracted_grid = cv2.warpPerspective(self.image, M, (maxLen, maxLen))
+        extracted_grid_path = "Output_Images/extracted_grid.png"
+        try:
+            os.remove(extracted_grid_path)
+        except:
+            pass
+        cv2.imwrite(extracted_grid_path, self.extracted_grid)
+        return extracted_grid_path
+
+    def get_extracted_grid(self):
+        return self.extracted_grid
