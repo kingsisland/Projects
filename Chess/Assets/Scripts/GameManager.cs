@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 ﻿
 using System.Numerics;
 using UnityEngine;
+=======
+﻿using UnityEngine;
+>>>>>>> 379ef97e0a59dc039c5dfe5e3994caec53161f81
 
 public class GameManager : MonoBehaviour
 {
@@ -32,7 +36,10 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         instance = this;
+<<<<<<< HEAD
         board = gameObject.GetComponent<Board>();
+=======
+>>>>>>> 379ef97e0a59dc039c5dfe5e3994caec53161f81
     }
 
     void Start()
@@ -59,7 +66,11 @@ public class GameManager : MonoBehaviour
         AddPiece(whiteKnight, white, 6, 0);
         AddPiece(whiteRook, white, 7, 0);
 
+<<<<<<< HEAD
         for (int col = 0; col < 8; col++)
+=======
+        for(int col = 0; col < 8; col++)
+>>>>>>> 379ef97e0a59dc039c5dfe5e3994caec53161f81
         {
             AddPiece(whitePawn, white, col, 1);
         }
@@ -76,7 +87,11 @@ public class GameManager : MonoBehaviour
         for (int col = 0; col < 8; col++)
         {
             AddPiece(blackPawn, black, col, 6);
+<<<<<<< HEAD
         }
+=======
+        }       
+>>>>>>> 379ef97e0a59dc039c5dfe5e3994caec53161f81
     }
 
     public void AddPiece(GameObject prefab, Player player, int col, int row)
@@ -86,6 +101,7 @@ public class GameManager : MonoBehaviour
         pieces[col, row] = pieceObject;
     }
 
+<<<<<<< HEAD
     public void SelectPieceAtGrid(Vector2Int gridPoint)
     {
         GameObject selectedPiece = pieces[gridPoint.x, gridPoint.y];
@@ -147,3 +163,7 @@ public class GameManager : MonoBehaviour
         board.MovePiece(piece, gridPoint);
     }
 }
+=======
+   
+}
+>>>>>>> 379ef97e0a59dc039c5dfe5e3994caec53161f81
