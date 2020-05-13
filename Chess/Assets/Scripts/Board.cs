@@ -31,7 +31,7 @@ public class Board : MonoBehaviour
         renderer.material = selectedMaterial;
     }
 
-    public void DeselctMaterial(GameObject piece)
+    public void DeselctPiece(GameObject piece)
     {
         MeshRenderer renderer = piece.GetComponentInChildren<MeshRenderer>();
         renderer.material = defaultMaterial;

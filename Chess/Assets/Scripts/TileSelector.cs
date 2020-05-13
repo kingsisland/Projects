@@ -1,44 +1,60 @@
 ﻿using UnityEngine;
-
+using UnityEngine.UIElements;
 
 public class TileSelector : MonoBehaviour
 {
    
 
-    public GameObject titleHighlightPrefab;
-    private GameObject titleHighlight;
+    public GameObject tileHighlightPrefab;
+    private GameObject tileHighlight;
+    private GameObject selectedPiece;
     // Start is called before the first frame update
     void Start()
     {
         Vector2Int gridPoint = Geometry.GridPoint(0, 0);
         Vector3 point = Geometry.PointFromGrid(gridPoint);
-        titleHighlight = Instantiate(titleHighlightPrefab, point, Quaternion.identity);
-        titleHighlight.SetActive(false);
-
-
-
+        tileHighlight = Instantiate(tileHighlightPrefab, point, Quaternion.identity);
+        tileHighlight.SetActive(false);
+        selectedPiece = null;
 
     }
 
     // Update is called once per frame
     void Update()
     {
+        // select a tileby hovering over it
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-       
-
         RaycastHit hit;
         if(Physics.Raycast(ray, out hit))
         {
             Vector3 point = hit.point;
             Vector2Int gridPoint = Geometry.GridFromPoint(point);
 
-            titleHighlight.SetActive(true);
-            titleHighlight.transform.position = Geometry.PointFromGrid(gridPoint);
+            tileHighlight.SetActive(true);
+            tileHighlight.transform.position = Geometry.PointFromGrid(gridPoint);
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                if(selectedPiece != null)
+                {
+                    GameManager.instance.DeselectPiece(selectedPiece);
+                }
+                selectedPiece = GameManager.instance.PieceAtGrid(gridPoint);
+                if(GameManager.instance.DoesPieceBelongToCurrentPlayer(selectedPiece))
+                {
+                    GameManager.instance.SelectPiece(selectedPiece);
+                    // Reference Point 1: add ExitState call here later
+
+                    ExitState(selectedPiece);
+                }
+            }
         }
         else
         {
-            titleHighlight.SetActive(false);
+            tileHighlight.SetActive(false);
         }
+
+        
     }
 
     public void EnterState()
@@ -46,6 +62,14 @@ public class TileSelector : MonoBehaviour
         enabled = true;
     }
 
+    private void ExitState(GameObject movingPiece)
+    {
+        this.enabled = false;
+        tileHighlight.SetActive(false);
+        MoveSelector move = GetComponent<MoveSelector>();
+        move.EnterState(movingPiece);
+
+    }
     #region 
     void InstantiateChessTiles()
     {

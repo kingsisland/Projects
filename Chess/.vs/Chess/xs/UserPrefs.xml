@@ -1,14 +1,27 @@
-﻿<Properties StartupConfiguration="{501BD3FF-7F48-2366-810A-1677FF50E37F}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/GameManager.cs">
+﻿<Properties GitUserInfo="UsingGIT" StartupConfiguration="{501BD3FF-7F48-2366-810A-1677FF50E37F}|">
+  <MonoDevelop.Ide.Workbench>
     <Files>
-      <File FileName="Assets/Scripts/TileSelector.cs" Line="26" Column="36" />
-      <File FileName="Assets/Scripts/GameManager.cs" Line="19" Column="1" />
+      <File FileName="Assets/Scripts/TileSelector.cs" Line="53" Column="10" />
+      <File FileName="Assets/Scripts/MoveSelector.cs" Line="46" Column="29" />
+      <File FileName="Assets/Scripts/GameManager.cs" Line="147" Column="24" />
+      <File FileName="Assets/Scripts/Board.cs" Line="37" Column="1" />
     </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="Chess" expanded="True" selected="True">
+            <Node name="Assets" expanded="True">
+              <Node name="Scripts" expanded="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <Debugger.DebugSourceFolders />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="3cfd5b42-8f37-4545-9234-361f691276f7" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="6fc34315-097c-43c7-bf77-47230c9005bc" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
