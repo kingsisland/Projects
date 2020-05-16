@@ -1,6 +1,8 @@
 ﻿
+using System.Collections.Generic;
 using System.Numerics;
 using UnityEngine;
+using UnityEngine.Video;
 
 public class GameManager : MonoBehaviour
 {
@@ -145,5 +147,37 @@ public class GameManager : MonoBehaviour
         pieces[startGridPoint.x, startGridPoint.y] = null;
         pieces[gridPoint.x, gridPoint.y] = piece;
         board.MovePiece(piece, gridPoint);
+    }
+
+    public List<Vector2Int> MovesForPiece(GameObject pieceObject)
+    {
+        Piece piece = pieceObject.GetComponent<Piece>();
+        Vector2Int gridPoint = GameManager.instance.GridForPiece(pieceObject);
+
+        var locations = piece.MoveLocations(gridPoint);
+
+        //remove the off limit tiles
+        locations.RemoveAll(tile => tile.x < 0 || tile.x > 7
+            || tile.y < 0 || tile.y > 7);
+
+        //remove the tiles containing friendly pieces
+        locations.RemoveAll(tile => FriendlyPieceAt(tile));
+
+        return locations;
+    }
+
+    public void NextPlayer()
+    {
+        Player tempPlayer = currentPlayer;
+        currentPlayer = otherPlayer;
+        otherPlayer = tempPlayer;
+    }
+
+    public void CapturePieceAt(Vector2Int gridPoint)
+    {
+        GameObject capturedPiece = GameManager.instance.PieceAtGrid(gridPoint);
+        currentPlayer.capturedPieces.Add(capturedPiece);
+        pieces[gridPoint.x, gridPoint.y] = null;
+        Destroy(capturedPiece);
     }
 }
