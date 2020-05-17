@@ -1,8 +1,8 @@
 ﻿
 using System.Collections.Generic;
-using System.Numerics;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.Video;
+using UnityEngine.Tilemaps;
 
 public class GameManager : MonoBehaviour
 {
@@ -31,10 +31,14 @@ public class GameManager : MonoBehaviour
     public Player currentPlayer;
     public Player otherPlayer;
 
+
+    private List<string> moves;
+
     void Awake()
     {
         instance = this;
         board = gameObject.GetComponent<Board>();
+        moves = new List<string>();
     }
 
     void Start()
@@ -177,7 +181,69 @@ public class GameManager : MonoBehaviour
     {
         GameObject capturedPiece = GameManager.instance.PieceAtGrid(gridPoint);
         currentPlayer.capturedPieces.Add(capturedPiece);
+        
         pieces[gridPoint.x, gridPoint.y] = null;
+
+        if(capturedPiece.GetComponent<Piece>().type == PieceType.King)
+        {
+            Debug.Log(currentPlayer.name + " wins");
+
+            // Destry the tile selector and move slector components (objects) to end(read destroy) the state machine
+            Destroy(gameObject.GetComponent<TileSelector>());
+            Destroy(gameObject.GetComponent<MoveSelector>());
+        }
+
         Destroy(capturedPiece);
     }
+
+    public void AddMove(GameObject movingPiece,  Vector2Int gridPoint, bool capture)
+    {
+        Debug.Log(gridPoint);
+        PieceType type = movingPiece.GetComponent<Piece>().type;    // TO FIX ::  Has some referrence to null problems with some pawn moves.
+
+        string move = string.Empty;
+        char col = (char)( (int)'a' + gridPoint.x);
+        string row = (gridPoint.y + 1).ToString();
+        if(type == PieceType.King)
+        {
+            move += "K";
+        }
+        else if(type == PieceType.Queen)
+        {
+            move += "Q";
+        }
+        else if(type == PieceType.Bishop)
+        {
+            move += "B";
+        }
+        else if(type == PieceType.Knight)
+        {
+            move += "N";
+        }
+        else if(type == PieceType.Rook)
+        {
+            move += "R";
+        }
+        else if(type == PieceType.Pawn && capture)
+        {
+            char previousCol = (char)((int)'a' + GameManager.instance.GridForPiece(movingPiece).x);
+            move += previousCol.ToString();
+        }
+        if (capture)    // Adding that x to the move, if it was a capture
+        {
+            move += 'x'.ToString();
+        }
+
+        move += col.ToString()+row;
+      
+
+        // Reference Point 1 : Add functionality to depict castling as well using O-O and o-o-o notations
+
+        // Adding the move to the list of moves
+        moves.Add(move);
+        Debug.Log(move);
+        
+    }
+
+    
 }

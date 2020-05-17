@@ -38,21 +38,25 @@ public class MoveSelector : MonoBehaviour
             {
                 if(!moveLocations.Contains(gridPoint)) // Is not a valid move 
                 {
-                    return;
+                    //return;
+                    ExitState(false);
                 }
                 if (GameManager.instance.PieceAtGrid(gridPoint) == null)
                 {
+
+                    GameManager.instance.AddMove(movingPiece, gridPoint, false);
                     GameManager.instance.Move(movingPiece, gridPoint);
                 }
                 // Reference point 3: Handle Capturing an enemy piece at the grid point if any
                 else
                 {
+                    GameManager.instance.AddMove(movingPiece, gridPoint, true);
                     GameManager.instance.CapturePieceAt(gridPoint);
                     GameManager.instance.Move(movingPiece, gridPoint);
                 }
                 
 
-                ExitState();
+                ExitState(true);
             }
         }
         else
@@ -85,7 +89,7 @@ public class MoveSelector : MonoBehaviour
         }
     }
 
-    private void ExitState()
+    private void ExitState(bool nextPlayer)
     {
         this.enabled = false;
         tileHighlight.SetActive(false);
@@ -96,7 +100,10 @@ public class MoveSelector : MonoBehaviour
         {
             Destroy(highlight);
         }
-        GameManager.instance.NextPlayer();
+        if(nextPlayer)
+        {
+            GameManager.instance.NextPlayer();
+        }
 
         TileSelector selector = GetComponent<TileSelector>();
         selector.EnterState();
