@@ -2,10 +2,10 @@
   <MonoDevelop.Ide.Workbench>
     <Files>
       <File FileName="Assets/Scripts/TileSelector.cs" Line="48" Column="1" />
-      <File FileName="Assets/Scripts/MoveSelector.cs" />
-      <File FileName="Assets/Scripts/GameManager.cs" Line="303" Column="2" />
+      <File FileName="Assets/Scripts/MoveSelector.cs" Line="68" Column="75" />
+      <File FileName="Assets/Scripts/GameManager.cs" Line="305" Column="2" />
       <File FileName="Assets/Scripts/Pieces/King.cs" Line="85" Column="6" />
-      <File FileName="Assets/Scripts/Board.cs" />
+      <File FileName="Assets/Scripts/Board.cs" Line="28" Column="95" />
       <File FileName="Assets/Scripts/Player.cs" />
       <File FileName="Assets/Scripts/Geometry.cs" />
       <File FileName="Assets/Scripts/Pieces/Rook.cs" />
