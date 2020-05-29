@@ -1,8 +1,7 @@
 ﻿
 using System.Collections.Generic;
-using System.Linq;
+using UnityEditor;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 public class GameManager : MonoBehaviour
 {
@@ -31,6 +30,10 @@ public class GameManager : MonoBehaviour
     public Player currentPlayer;
     public Player otherPlayer;
 
+    public float RotateSpeed;
+
+    private GameObject whiteKingInstantiated;
+    private GameObject blackKingInstantiated;
 
     private List<string> moves;
 
@@ -52,6 +55,8 @@ public class GameManager : MonoBehaviour
         otherPlayer = black;
 
         InitialSetup();
+        whiteKingInstantiated = pieces[4, 0];
+        blackKingInstantiated = pieces[4, 7];
     }
 
     private void InitialSetup()
@@ -134,7 +139,6 @@ public class GameManager : MonoBehaviour
     public bool FriendlyPieceAt(Vector2Int gridPoint)
     {
         GameObject piece = PieceAtGrid(gridPoint);
-
         if (piece == null)
             return false;
         return currentPlayer.pieces.Contains(piece);
@@ -147,6 +151,7 @@ public class GameManager : MonoBehaviour
 
     public void Move(GameObject piece, Vector2Int gridPoint)
     {
+
         Vector2Int startGridPoint = GridForPiece(piece);
         pieces[startGridPoint.x, startGridPoint.y] = null;
         pieces[gridPoint.x, gridPoint.y] = piece;
@@ -175,6 +180,10 @@ public class GameManager : MonoBehaviour
         Player tempPlayer = currentPlayer;
         currentPlayer = otherPlayer;
         otherPlayer = tempPlayer;
+
+        // FIXME Perform A Nicer Cmaera Transition
+        //  Camera.main.transform.RotateAround(new Vector3(3.5f, 0f, 3.5f), this.gameObject.transform.up, 180f);
+
     }
 
     public void CapturePieceAt(Vector2Int gridPoint)
@@ -201,6 +210,7 @@ public class GameManager : MonoBehaviour
         Debug.Log(gridPoint);
         PieceType type = movingPiece.GetComponent<Piece>().type;    // TO FIX ::  Has some referrence to null problems with some pawn moves.
 
+       
         string move = string.Empty;
         char col = (char)( (int)'a' + gridPoint.x);
         string row = (gridPoint.y + 1).ToString();
@@ -237,7 +247,7 @@ public class GameManager : MonoBehaviour
         move += col.ToString()+row;
       
 
-        // Reference Point 1 : Add functionality to depict castling as well using O-O and o-o-o notations
+        // TODO Reference Point 1 : Add functionality to depict castling as well using O-O and o-o-o notations
 
         // Adding the move to the list of moves
         moves.Add(move);
@@ -245,5 +255,66 @@ public class GameManager : MonoBehaviour
         
     }
 
-    
+    public bool IsKingInCheck(Player player)
+    {
+       GameObject king;
+       if(player == white)
+        {
+            king = whiteKingInstantiated;
+            // get the actual instantiated 
+        }
+        else
+        {
+            king = blackKingInstantiated;
+        }
+
+        King piece = king.GetComponent<King>();
+        var underCheck =  piece.IsUnderCheck(GridForPiece(king), player);
+        if(underCheck)
+        {
+            Debug.Log(player.name + " is under check");
+            board.UnderAttack(king);
+        }
+        else
+        {
+            board.DeselctPiece(king);
+        }
+
+        return underCheck;
+    }
+
+    public void Castling(Vector2Int KingPosition,  bool left)
+    {
+  
+        if(left)
+        {
+            Move(pieces[0, KingPosition.y], new Vector2Int(3, KingPosition.y));
+            Move(pieces[4, KingPosition.y], new Vector2Int(2, KingPosition.y));
+        }
+        else
+            
+        {
+            Move(pieces[7, KingPosition.y], new Vector2Int(5, KingPosition.y));
+            Move(pieces[4, KingPosition.y], new Vector2Int(6, KingPosition.y));
+        }
+        return;
+    }
+
 }
+
+// TODO:
+//GAME LOGIC
+//1. IMPLEMENT CASTLING ON BOTH SIDES
+//2. IMPLEMENT PAWN UPGRADATION TO BASICALLY ANYTHING OTHER THAN A PAWN OR A KING
+//3. IMPELEMENT PAWN ENPASSANT
+//4. IMPLEMEMT CHESS AI so as to accomodate a PLAYER VS CPU style
+//5. DETECT IF THE KING IS IN CHECK     --- DONE ---
+
+//CAMERA
+//1.  IMPLEMENT A SMOTHER TRANSITION OF CHANGING THE CAMERA TO BOTH SIDES
+
+//PIECES
+//1. IMPLEMENT A SMOTHER MOTION OF PIECES WHEN THEY MOVE TO THEIR RESPECTIVE PLACES
+
+//SOUNDS:
+//1. ADD SATISFYING SOUND EFFECTS FOR EVENTS LIKE PIECE SELECTION, PIECE MOVEMENT, PIECE CAPTURING ETC.,

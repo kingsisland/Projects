@@ -20,6 +20,7 @@ public class MoveSelector : MonoBehaviour
         this.enabled = false;
         tileHighlight = Instantiate(tileHighlightPrefab, Geometry.PointFromGrid(new Vector2Int(0, 0)),
                                         Quaternion.identity, gameObject.transform);
+
         tileHighlight.SetActive(false);
 
     }
@@ -36,26 +37,57 @@ public class MoveSelector : MonoBehaviour
 
             if (Input.GetMouseButtonDown(0))
             {
+                // TODO : find out if moving piece is King and check if it just castled
+
                 if(!moveLocations.Contains(gridPoint)) // Is not a valid move 
                 {
                     //return;
+                    Debug.Log("Invalid move");
                     ExitState(false);
                 }
-                if (GameManager.instance.PieceAtGrid(gridPoint) == null)
+                else if (GameManager.instance.PieceAtGrid(gridPoint) == null)
                 {
 
-                    GameManager.instance.AddMove(movingPiece, gridPoint, false);
-                    GameManager.instance.Move(movingPiece, gridPoint);
+                   //GameManager.instance.AddMove(movingPiece, gridPoint, false);
+                    if(movingPiece.GetComponent<Piece>().type == PieceType.King)
+                    {
+                        if(movingPiece.GetComponent<King>().HasMoved == false)
+                        {
+                            if (gridPoint.x == 2)
+                            {
+                                GameManager.instance.Castling(gridPoint, true);
+                            }
+                            else if(gridPoint.x == 6)
+                            {
+                                GameManager.instance.Castling(gridPoint, false);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        GameManager.instance.Move(movingPiece, gridPoint);
+                    }
+                    
                 }
                 // Reference point 3: Handle Capturing an enemy piece at the grid point if any
                 else
                 {
-                    GameManager.instance.AddMove(movingPiece, gridPoint, true);
+                    //GameManager.instance.AddMove(movingPiece, gridPoint, true);
                     GameManager.instance.CapturePieceAt(gridPoint);
                     GameManager.instance.Move(movingPiece, gridPoint);
                 }
                 
+                if( GameManager.instance.IsKingInCheck(GameManager.instance.currentPlayer))    // Current Player's King is in check
+                {
+                    // Rewind the move OR Invalidate the current move
+                }
 
+                if(GameManager.instance.IsKingInCheck(GameManager.instance.otherPlayer))   // Opponents King is in check
+                {
+                    Debug.Log("King is in check");
+          
+                }
+            
                 ExitState(true);
             }
         }
