@@ -1,20 +1,47 @@
-﻿using System.Collections;
+﻿
 using System.Collections.Generic;
-using System.Numerics;
+
 using UnityEngine;
 
 public class Pawn : Piece
 {
     bool firstMove= true;
+    public bool didEnPasse = false;
 
     public override List<Vector2Int> MoveLocations(Vector2Int gridPoint)
     {
         List<Vector2Int> locations = new List<Vector2Int>();
 
         int forwardDirection = GameManager.instance.currentPlayer.forward;
-        
-        //  To ADD : add mechanism to enable EN PASSE
 
+        //  TODO : add mechanism to enable EN PASSE
+       
+        
+        // check for left
+        if(!didEnPasse)
+        {
+            GameObject leftPiece = GameManager.instance.PieceAtGrid(new Vector2Int(gridPoint.x - 1, gridPoint.y));
+            if (leftPiece != null && leftPiece.GetComponent<Piece>().type == PieceType.Pawn &&
+                GameManager.instance.lastMovedPiece == leftPiece && Mathf.Abs(GameManager.instance.lastPieceStartedFrom.y - gridPoint.y) == 2)
+            {
+                locations.Add(new Vector2Int(gridPoint.x -1, gridPoint.y + GameManager.instance.currentPlayer.forward));
+            }
+        }
+
+        // check for right
+        if(!didEnPasse)
+        {
+            GameObject rightPiece = GameManager.instance.PieceAtGrid(new Vector2Int(gridPoint.x + 1, gridPoint.y));
+            if( rightPiece != null && rightPiece.GetComponent<Piece>().type == PieceType.Pawn &&
+                GameManager.instance.lastMovedPiece == rightPiece && Mathf.Abs(GameManager.instance.lastPieceStartedFrom.y - gridPoint.y) == 2)
+            {
+                locations.Add(new Vector2Int(gridPoint.x + 1, gridPoint.y + GameManager.instance.currentPlayer.forward));
+            }
+
+        }
+
+
+        // normal forward steps
         Vector2Int forward = new Vector2Int(gridPoint.x, gridPoint.y + forwardDirection);
         if(!GameManager.instance.PieceAtGrid(forward))
         {

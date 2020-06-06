@@ -37,6 +37,11 @@ public class GameManager : MonoBehaviour
 
     private List<string> moves;
 
+    [HideInInspector]
+    public GameObject lastMovedPiece;
+    [HideInInspector]
+    public Vector2Int lastPieceStartedFrom;
+
     void Awake()
     {
         instance = this;
@@ -57,6 +62,9 @@ public class GameManager : MonoBehaviour
         InitialSetup();
         whiteKingInstantiated = pieces[4, 0];
         blackKingInstantiated = pieces[4, 7];
+
+        //lastMovedPiece = null;
+        
     }
 
     private void InitialSetup()
@@ -153,6 +161,10 @@ public class GameManager : MonoBehaviour
     {
 
         Vector2Int startGridPoint = GridForPiece(piece);
+        // Remembering this piece's movement for the next player to check for Pawn en passe
+        lastMovedPiece = piece;
+        lastPieceStartedFrom = startGridPoint;
+        // Actually moving the piece
         pieces[startGridPoint.x, startGridPoint.y] = null;
         pieces[gridPoint.x, gridPoint.y] = piece;
         board.MovePiece(piece, gridPoint);
@@ -304,9 +316,9 @@ public class GameManager : MonoBehaviour
 
 // TODO:
 //GAME LOGIC
-//1. IMPLEMENT CASTLING ON BOTH SIDES
+//1. IMPLEMENT CASTLING ON BOTH SIDES --- DONE ---
 //2. IMPLEMENT PAWN UPGRADATION TO BASICALLY ANYTHING OTHER THAN A PAWN OR A KING
-//3. IMPELEMENT PAWN ENPASSANT
+//3. IMPELEMENT PAWN ENPASSANT  --- DONE ---
 //4. IMPLEMEMT CHESS AI so as to accomodate a PLAYER VS CPU style
 //5. DETECT IF THE KING IS IN CHECK     --- DONE ---
 

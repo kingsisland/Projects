@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -62,6 +63,18 @@ public class MoveSelector : MonoBehaviour
                                 GameManager.instance.Castling(gridPoint, false);
                             }
                         }
+                    } 
+                    else if(movingPiece.GetComponent<Piece>().type == PieceType.Pawn && Mathf.Abs(GameManager.instance.GridForPiece(movingPiece).y -
+                        gridPoint.y) == 1 && Math.Abs(GameManager.instance.GridForPiece(movingPiece).x - gridPoint.x) == 1)
+                    {   if(GameManager.instance.GridForPiece(movingPiece).x > gridPoint.x)
+                        {
+                            GameManager.instance.CapturePieceAt(new Vector2Int(gridPoint.x , gridPoint.y - GameManager.instance.currentPlayer.forward)); 
+                        }
+                        else
+                        {
+                            GameManager.instance.CapturePieceAt(new Vector2Int(gridPoint.x , gridPoint.y - GameManager.instance.currentPlayer.forward));
+                        }
+                        GameManager.instance.Move(movingPiece, gridPoint);
                     }
                     else
                     {
