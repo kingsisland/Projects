@@ -1,18 +1,27 @@
 ﻿<Properties GitUserInfo="UsingGIT" StartupConfiguration="{501BD3FF-7F48-2366-810A-1677FF50E37F}|">
   <MonoDevelop.Ide.Workbench>
     <Files>
-      <File FileName="Assets/Scripts/TileSelector.cs" Line="48" Column="1" />
-      <File FileName="Assets/Scripts/GameManager.cs" Line="321" Column="45" />
-      <File FileName="Assets/Scripts/MoveSelector.cs" Line="75" Column="107" />
-      <File FileName="Assets/Scripts/Pieces/Pawn.cs" Line="38" Column="119" />
+      <File FileName="Assets/Scripts/TileSelector.cs" Line="24" Column="1" />
+      <File FileName="Assets/Scripts/GameManager.cs" Line="385" Column="37" />
+      <File FileName="Assets/Scripts/MoveSelector.cs" Line="102" Column="63" />
+      <File FileName="Assets/Scripts/Pieces/Pawn.cs" Line="52" Column="18" />
+      <File FileName="Assets/Scripts/Player.cs" Line="12" Column="12" />
+      <File FileName="Assets/Scripts/Board.cs" Line="15" Column="47" />
     </Files>
+    <Pads>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State />
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <Debugger.DebugSourceFolders />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="46fa7123-5311-4185-9e94-b7dece484451" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="c9517e92-0337-4351-b7ef-7b27b396a8a5" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
+    <BreakpointStore>
+      <Breakpoint enabled="false" file="/Users/kaytlyn/Documents/Projects/Chess/Assets/Scripts/GameManager.cs" relfile="Assets/Scripts/GameManager.cs" line="30" column="1" />
+    </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MultiItemStartupConfigurations />
 </Properties>

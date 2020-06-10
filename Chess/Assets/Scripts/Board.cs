@@ -11,8 +11,8 @@ public class Board : MonoBehaviour
         Vector2Int gridPoint = Geometry.GridPoint(col, row);
         GameObject newPiece = Instantiate(piece, Geometry.PointFromGrid(gridPoint),
                                                 Quaternion.identity, gameObject.transform);
-        MeshRenderer renderer = newPiece.GetComponentInChildren<MeshRenderer>();
-        renderer.material = defaultMaterial;
+        //MeshRenderer renderer = newPiece.GetComponentInChildren<MeshRenderer>();
+        //renderer.material = defaultMaterial;
         return newPiece;
     }
 
@@ -31,10 +31,15 @@ public class Board : MonoBehaviour
             Rook rook = piece.GetComponent<Rook>();
             rook.HasMoved = true;            
         }
-        if(pieceScript.type == PieceType.King)
+        else if(pieceScript.type == PieceType.King)
         {
             King king = piece.GetComponent<King>();
             king.HasMoved = true;
+        }
+        else if (pieceScript.type == PieceType.Pawn)
+        {
+            Pawn pawn = piece.GetComponent<Pawn>();
+            pawn.HasMoved = true;
         }
 
         piece.transform.position = Geometry.PointFromGrid(gridPoint);

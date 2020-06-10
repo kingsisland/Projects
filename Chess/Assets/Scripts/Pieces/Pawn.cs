@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Pawn : Piece
 {
-    bool firstMove= true;
+    public bool HasMoved = false;
     public bool didEnPasse = false;
 
     public override List<Vector2Int> MoveLocations(Vector2Int gridPoint)
@@ -49,7 +49,7 @@ public class Pawn : Piece
 
             Vector2Int doubleForward = new Vector2Int(gridPoint.x, gridPoint.y + (forwardDirection * 2));
 
-            if (firstMove && !GameManager.instance.PieceAtGrid(doubleForward))  
+            if (!HasMoved && !GameManager.instance.PieceAtGrid(doubleForward))  
             {
                 locations.Add(doubleForward);
             }

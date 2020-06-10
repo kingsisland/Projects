@@ -42,6 +42,10 @@ public class GameManager : MonoBehaviour
     [HideInInspector]
     public Vector2Int lastPieceStartedFrom;
 
+    private GameObject pawnUgradePiece;
+    public GameObject pawnUpgradeUI;
+    private Vector2Int pawnUpgradeGridPoint;
+
     void Awake()
     {
         instance = this;
@@ -311,6 +315,80 @@ public class GameManager : MonoBehaviour
         }
         return;
     }
+
+    public void HandlePawnUpgradation(Vector2Int gridPoint)
+    {
+        //Destroy the current pawn Gameobject
+        Destroy(PieceAtGrid(gridPoint));
+        // Freezes the game
+        Time.timeScale = 0f;
+        pawnUgradePiece = null;
+        pawnUpgradeGridPoint = gridPoint;
+        pawnUpgradeUI.SetActive(true);
+
+        // TODO :  PHandle instantiationg the selected game object at the desired gridpoint
+    }
+   
+    public void QueenUpgrade()
+    {
+        if(otherPlayer.name == "white")
+        {
+            pawnUgradePiece = whiteQueen;
+        }
+        else
+        {
+            pawnUgradePiece = blackQueen;
+        }
+    }
+    public void RookUpgrade()
+    {
+        if (otherPlayer.name == "white")
+        {
+            pawnUgradePiece = whiteRook;
+        }
+        else
+        {
+            pawnUgradePiece = blackRook;
+        }
+    }
+    public void BishopUpgrade()
+    {
+        if (otherPlayer.name == "white")
+        {
+            pawnUgradePiece = whiteBishop;
+        }
+        else
+        {
+            pawnUgradePiece = blackBishop;
+        }
+    }
+    public void KnightUpgrade()
+    {
+        if (otherPlayer.name == "white")
+        {
+            pawnUgradePiece = whiteKnight;
+        }
+        else
+        {
+            pawnUgradePiece = blackKnight;
+        }
+    }
+
+    public void SelectionDone()
+    {
+        //Debug.Log(currentPlayer.name);
+        if (pawnUgradePiece != null)
+        {
+            
+            pawnUpgradeUI.SetActive(false);
+            //TODO:   Complete Upgradation by going back to the function and instantiate required chess piece
+            AddPiece(pawnUgradePiece, otherPlayer, pawnUpgradeGridPoint.x, pawnUpgradeGridPoint.y);
+            Time.timeScale = 1f;
+        }
+        return;
+    }
+
+ 
 
 }
 

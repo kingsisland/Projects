@@ -38,19 +38,20 @@ public class MoveSelector : MonoBehaviour
 
             if (Input.GetMouseButtonDown(0))
             {
-                // TODO : find out if moving piece is King and check if it just castled
+               
 
                 if(!moveLocations.Contains(gridPoint)) // Is not a valid move 
                 {
                     //return;
-                    Debug.Log("Invalid move");
+                    Debug.Log("Moving to "+ gridPoint.ToString() +" is not logically possible");
                     ExitState(false);
                 }
                 else if (GameManager.instance.PieceAtGrid(gridPoint) == null)
                 {
+                    //GameManager.instance.AddMove(movingPiece, gridPoint, false);
 
-                   //GameManager.instance.AddMove(movingPiece, gridPoint, false);
-                    if(movingPiece.GetComponent<Piece>().type == PieceType.King)
+                    //  find out if moving piece is King and check if it just castled
+                    if (movingPiece.GetComponent<Piece>().type == PieceType.King)
                     {
                         if(movingPiece.GetComponent<King>().HasMoved == false)
                         {
@@ -63,18 +64,25 @@ public class MoveSelector : MonoBehaviour
                                 GameManager.instance.Castling(gridPoint, false);
                             }
                         }
-                    } 
-                    else if(movingPiece.GetComponent<Piece>().type == PieceType.Pawn && Mathf.Abs(GameManager.instance.GridForPiece(movingPiece).y -
-                        gridPoint.y) == 1 && Math.Abs(GameManager.instance.GridForPiece(movingPiece).x - gridPoint.x) == 1)
-                    {   if(GameManager.instance.GridForPiece(movingPiece).x > gridPoint.x)
-                        {
-                            GameManager.instance.CapturePieceAt(new Vector2Int(gridPoint.x , gridPoint.y - GameManager.instance.currentPlayer.forward)); 
-                        }
-                        else
-                        {
-                            GameManager.instance.CapturePieceAt(new Vector2Int(gridPoint.x , gridPoint.y - GameManager.instance.currentPlayer.forward));
-                        }
+                    }
+                    else if(movingPiece.GetComponent<Piece>().type == PieceType.Pawn)
+                    {
                         GameManager.instance.Move(movingPiece, gridPoint);
+                        // Checking for Pawn  En passe 
+                        if (Mathf.Abs(GameManager.instance.GridForPiece(movingPiece).y -
+                        gridPoint.y) == 1 && Math.Abs(GameManager.instance.GridForPiece(movingPiece).x - gridPoint.x) == 1)
+                        {
+                            if (GameManager.instance.GridForPiece(movingPiece).x > gridPoint.x)
+                            {
+                                GameManager.instance.CapturePieceAt(new Vector2Int(gridPoint.x, gridPoint.y - GameManager.instance.currentPlayer.forward));
+                            }
+                            else
+                            {
+                                GameManager.instance.CapturePieceAt(new Vector2Int(gridPoint.x, gridPoint.y - GameManager.instance.currentPlayer.forward));
+                            } 
+                        }
+                        HasPawnReachedTheOtherSide(gridPoint);
+                        
                     }
                     else
                     {
@@ -88,8 +96,14 @@ public class MoveSelector : MonoBehaviour
                     //GameManager.instance.AddMove(movingPiece, gridPoint, true);
                     GameManager.instance.CapturePieceAt(gridPoint);
                     GameManager.instance.Move(movingPiece, gridPoint);
+                    // Check for pawn upgradation
+                    if (movingPiece.GetComponent<Piece>().type == PieceType.Pawn)
+                    {
+                        HasPawnReachedTheOtherSide(gridPoint);
+                    }
                 }
-                
+
+
                 if( GameManager.instance.IsKingInCheck(GameManager.instance.currentPlayer))    // Current Player's King is in check
                 {
                     // Rewind the move OR Invalidate the current move
@@ -152,5 +166,16 @@ public class MoveSelector : MonoBehaviour
 
         TileSelector selector = GetComponent<TileSelector>();
         selector.EnterState();
+    }
+
+    void HasPawnReachedTheOtherSide(Vector2Int gridPoint)
+    {
+        int forward = GameManager.instance.currentPlayer.forward;
+        if ((gridPoint.y == 7 && forward == 1) || (gridPoint.y == 0 && forward == -1))
+        {
+            // TODO : REFERENCE POINT : call the gamemangaer to handle pawn upgradation
+            GameManager.instance.HandlePawnUpgradation(gridPoint);
+        }
+        return;
     }
 }
