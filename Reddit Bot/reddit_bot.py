@@ -1,6 +1,10 @@
 import praw
 import time
 import os
+import json
+import re
+import random
+
 
 REPLY_MESSAGE = ("Hi, [Here](https://imgur.com/r/aww/i72rdxt) is "
                  "something you would like")
@@ -28,8 +32,25 @@ def get_saved_comments():
     return comments_replied_to
 
 
+def get_random_quote():
+    with open('quotes.json', 'r') as quotes:
+        bot_quotes = json.load(quotes)
+    return random.choice(bot_quotes)
+
+
 comments_replied_to = get_saved_comments()
 print(comments_replied_to)
+
+
+def is_trigger_mentioned(text):
+    with open("triggers.json", 'r') as triggers:
+        triggers_list = json.load(triggers)
+
+    for trigger in triggers_list:
+        # Do a case insentive search
+        if re.search(trigger, text, re.IGNORECASE):
+            return True
+    return False
 
 
 def main():
@@ -43,11 +64,13 @@ def run_bot(reddit, comments_replied_to):
     for comment in reddit.subreddit('test').comments(limit=10):
         # print(comment.author.name + " :   " + comment.body)
         if (
-            '!joke' in comment.body and comment.id not in comments_replied_to
-            and not comment.author == reddit.user.me()
+            is_trigger_mentioned(comment.body) and
+            comment.id not in comments_replied_to and
+            not comment.author == reddit.user.me()
         ):
             print(comment.author.name + " : " + comment.body)
-            comment.reply(REPLY_MESSAGE)
+            # comment.reply(REPLY_MESSAGE)
+            comment.reply(get_random_quote())
             comments_replied_to.append(comment.id)
             print('replied to comment ' + comment.id)
             with open('comments_replied_to.txt', 'a') as f:
