@@ -1,2 +1,2 @@
 # Projects
-A repo containing all my fun projects
+A repo containing all my fun projects.
